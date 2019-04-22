@@ -1,0 +1,26 @@
+{
+  "name": "recipe-search",
+  "version": "1.0.0",
+  "description": "recipe search application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lavenduale/recipe-search-application.git"
+  },
+  "author": "Ethan Du",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lavenduale/recipe-search-application/issues"
+  },
+  "homepage": "https://github.com/lavenduale/recipe-search-application#readme",
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "webpack": "^4.30.0"
+  },
+  "dependencies": {
+    "jquery": "^3.4.0"
+  }
+}
