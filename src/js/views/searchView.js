@@ -10,6 +10,7 @@ export const clearInput = () => {
 
 export const clearRes = () => {
     elements.searchResList.innerHTML = '';
+    elements.searchResPages.innerHTML = '';
 };
 
 /*

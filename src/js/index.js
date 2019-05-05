@@ -11,6 +11,7 @@
 //https://www.food2fork.com/api/search
 
 import Search from './models/Search';
+import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
 import { elements, renderLoader, clearLoader } from './views/base';
 
@@ -22,6 +23,8 @@ import { elements, renderLoader, clearLoader } from './views/base';
 //
 const state = {};
 
+
+/* --------------- Search Controller -------------------- */
 const controlSearch = async () => {
     // 1) Get query from view
     //const query = 'pizza'; //TODO
@@ -37,13 +40,19 @@ const controlSearch = async () => {
         searchView.clearRes();
         renderLoader(elements.searchRes);
 
-        // 4) Search for recipes
-        await state.search.getResults();
+        try {
+            // 4) Search for recipes
+            await state.search.getResults();
 
-        // 5) Render results on UI
-        clearLoader();
-        //console.log(state.search.result);
-        searchView.renderResults(state.search.result);
+            // 5) Render results on UI
+            clearLoader();
+            //console.log(state.search.result);
+            searchView.renderResults(state.search.result);
+
+        } catch (err) {
+            alert('It is wrong here.');
+            clearLoader();
+        }
     }
 }
 
@@ -53,8 +62,50 @@ elements.searchForm.addEventListener('submit', e => {
 });
 
 elements.searchResPages.addEventListener('click', e => {
-    const btn = e.target.closest('.btn-inline');
+    const btn = e.target.closest('.btn-inline'); // when user click the text of button, or icon of button, or button itself can be relized as return button
     if (btn) {
-        console.log(btn);
+        const goToPage = parseInt(btn.dataset.goto, 10); // dataset.goto is from createButton function of searchView
+        searchView.clearRes();
+        searchView.renderResults(state.search.result, goToPage);
+        //console.log(goToPage);
     }
 });
+
+
+/* --------------------- Recipe Controller --------------------- */
+//const r = new Recipe(47746); // pass a id to Recipe save into r
+//r.getRecipe();
+//console.log(r);
+
+// get the id from url on the webpage, and the number is called hash
+const controlRecipe = async () => {
+    // get the id from url
+    const id = window.location.hash.replace('#', '');
+    console.log(id); // print hash number
+
+    if (id){
+
+        // Prepare UI for changes
+
+        // Create new recipe object
+        state.recipe = new Recipe(id);
+
+        try{
+            // Get recipe data
+            await state.recipe.getRecipe(); // return a promise of recipe
+
+            // Calculate servings and time
+            state.recipe.calcTime();
+            state.recipe.calcServings();
+
+            // Render recipe
+            console.log(state.recipe);
+        } catch (err) {
+            alert('Error processing recipe!');
+        }
+    }
+};
+
+//window.addEventListener('hashchange', controlRecipe);
+//window.addEventListener('load', controlRecipe);
+['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
