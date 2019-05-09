@@ -35,7 +35,7 @@ export default class Recipe {
     // make a new ingredients list, and parse the list by map function with passing el, and el directs to a call back function TODO
     parseIngredients() {
         // create two arrays, long for units, replace long by short
-        const unitsLong = ['tablespoons', 'tablespoon', 'ounce', 'ounces', 'teaspoon', 'teaspoons', 'cups', 'pounds'];
+        const unitsLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
         const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
 
         //const newIngredients = this.ingredients.map(el);
@@ -48,11 +48,52 @@ export default class Recipe {
             }); 
 
             // 2) Remove parentheses
-            ingredient = ingredient.replaces(/ *\([^)]*\) */g, ''); // remove parenthese in ingredient then set it to ingredient
+            ingredient = ingredient.replace(/ *\([^)]*\) */g, ' '); // remove parenthese in ingredient then set it to ingredient
 
             // 3) Parse ingredients into count, unit and ingredient
+            const arrIng = ingredient.split(' '); // put all the units from ingredients to array
+            const unitIndex = arrIng.findIndex(el2 => unitsShort.includes(el2)); // we test that for each current element(el2), if the element is inside of the units array(unitsShort), return true and false
 
-            return ingredient;
+            let objIng;
+            if (unitIndex > -1) { // find, true
+                // There is a unit
+                // only include from 0 to index
+                // Ex. 4 1/2 cups, arrCount is [4, 1/2] because function array.slice(start, end) doesn't count array[end]
+                // Ex. 4 cups, arrCount is [4]
+                const arrCount = arrIng.slice(0, unitIndex);
+                let count; // define count variable outside of if scope
+                if (arrCount.length === 1) {
+                    count = eval(arrIng[0].replace('-', '+')); // replace - by + and then evaluate
+                } 
+                else {
+                    count = eval(arrIng.slice(0, unitIndex).join('+')); // eval() function will evaluate string as math
+                                                                        // Ex. 4 1/2 cups, arrCount is [4, 1/2] --> "4+1/2" use eval("4+1/2") --> 4.5
+                }
+
+                objIng = {
+                    count,
+                    unit: arrIng[unitIndex],
+                    ingredient: arrIng.slice(unitIndex + 1).join(' ')
+                };
+            } 
+            else if (parseInt(arrIng[0], 10)){
+                // There is NO unit, but 1st element is a number
+                objIng = {
+                    count: arrIng([0], 10),
+                    unit: '',
+                    ingredient: arrIng.slice(1).join(' ')// entire array excep first element because first element here is a number, and rest of the array is the ingredient
+                };
+            }
+            else if (unitIndex === -1){ // couldn't find, false
+                // There is NO unit and NO number in 1st position
+                objIng = {
+                    count: 1,
+                    unit: '',
+                    ingredient
+                };
+            }
+
+            return objIng;
         });
         this.ingredients = newIngredients; // set newIngredients(parsed one) back to ingredients list
     }
