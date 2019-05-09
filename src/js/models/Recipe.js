@@ -28,7 +28,32 @@ export default class Recipe {
         this.time = periods * 15;
     }
 
-    calcServings (){
+    calcServings(){
         this.servings = 4;
-    }    
+    }
+    
+    // make a new ingredients list, and parse the list by map function with passing el, and el directs to a call back function TODO
+    parseIngredients() {
+        // create two arrays, long for units, replace long by short
+        const unitsLong = ['tablespoons', 'tablespoon', 'ounce', 'ounces', 'teaspoon', 'teaspoons', 'cups', 'pounds'];
+        const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
+
+        //const newIngredients = this.ingredients.map(el);
+        const newIngredients = this.ingredients.map(el => {
+            // 1) Uniform units
+            let ingredient = el.toLowerCase(); // el here is each element of the array(ingredients)
+            // unit: current element in the array unitsLong;    i: current index of that element
+            unitsLong.forEach((unit, i) => { // loop long unit array here, when they are appearing from ingredients in api
+                ingredient = ingredient.replace(unit, unitsShort[i]); // replace the current element (unit) from long array by unitsShort[i], set it to ingredient
+            }); 
+
+            // 2) Remove parentheses
+            ingredient = ingredient.replaces(/ *\([^)]*\) */g, ''); // remove parenthese in ingredient then set it to ingredient
+
+            // 3) Parse ingredients into count, unit and ingredient
+
+            return ingredient;
+        });
+        this.ingredients = newIngredients; // set newIngredients(parsed one) back to ingredients list
+    }
 }
